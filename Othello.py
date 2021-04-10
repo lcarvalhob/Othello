@@ -5,10 +5,6 @@ PLAYER1 = 'B'
 PLAYER2 = 'W'
 
 
-class InvalidMoveException(Exception):
-    pass
-
-
 def valid_move(row, col):
     return 0 <= row <= 7 and 0 <= col <= 7
 
@@ -21,10 +17,11 @@ class Othello:
         self.player2 = PLAYER2
         self.rows = ROWS
         self.cols = COLS
-        self.board = [[]]
-        self.reset_board()
+        self.board = self.reset_board()
+        self.whose_turn = PLAYER1
 
     def reset_board(self):
+        board = [[]]
         for x in range(ROWS):
             for y in range(COLS):
                 self.board[x][y] = EMPTY
@@ -34,17 +31,18 @@ class Othello:
         self.board[4][3] = PLAYER1
         self.player1 = PLAYER1
         self.player2 = PLAYER2
-        return self.board
+        return board
 
     def move(self, player, row, col):
+        opponent = self.opponent()
         disks_to_flip = self.check_move(player, row, col)
 
-        if disks_to_flip == 0:
-            raise InvalidMoveException()
-
-        self.board[row][col] = player
-        for x, y in disks_to_flip:
-            self.board[x][y] = player
+        if opponent != player:
+            self.board[row][col] = player
+            for x, y in disks_to_flip:
+                self.board[x][y] = player
+            if self.valid_moves(opponent):
+                self.switch_turn()
 
     def check_move(self, player, row, col):
         if self.board[row][col] != self.empty or not valid_move(row, col):
@@ -84,7 +82,7 @@ class Othello:
                             disks_to_flip.append([x, y])
 
         self.board[row][col] = self.empty
-        if len(disks_to_flip) == 0:
+        if not disks_to_flip:
             return 0
         return disks_to_flip
 
@@ -98,7 +96,7 @@ class Othello:
         return valid_moves
 
     def game_state(self):
-        return len(self.valid_moves(self.player1)) == 0 and len(self.valid_moves(self.player2)) == 0
+        return not self.valid_moves(self.player1) and not self.valid_moves(self.player2)
 
     def disks_count(self):
         player1 = 0
@@ -119,3 +117,18 @@ class Othello:
             return self.player2
         else:
             return None
+
+    def switch_turn(self):
+        if self.whose_turn == self.player1:
+            self.whose_turn = self.player2
+        else:
+            self.whose_turn = self.player1
+
+    def opponent(self):
+        if self.whose_turn == self.player1:
+            return self.player2
+        else:
+            return self.player1
+
+    def get_board(self):
+        return self.board
