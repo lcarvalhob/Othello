@@ -21,16 +21,16 @@ class Othello:
         self.whose_turn = PLAYER1
 
     def reset_board(self):
-        board = [[]]
+        board = []
         for x in range(ROWS):
+            board.append([])
             for y in range(COLS):
-                self.board[x][y] = EMPTY
-        self.board[3][3] = PLAYER2
-        self.board[4][4] = PLAYER2
-        self.board[3][4] = PLAYER1
-        self.board[4][3] = PLAYER1
-        self.player1 = PLAYER1
-        self.player2 = PLAYER2
+                board[-1].append(EMPTY)
+        board[3][3] = PLAYER2
+        board[4][4] = PLAYER2
+        board[3][4] = PLAYER1
+        board[4][3] = PLAYER1
+
         return board
 
     def move(self, player, row, col):
