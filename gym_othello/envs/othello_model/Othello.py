@@ -1,3 +1,5 @@
+import random
+
 def valid_move(row, col):
     return 0 <= row <= 7 and 0 <= col <= 7
 
@@ -131,6 +133,12 @@ class Othello:
             return self.player2
         else:
             return self.player1
+
+    def opponent_move(self, opponent):
+        moves = self.valid_moves(opponent)
+        if len(moves) != 0:
+            random_move = random.randint(0, len(moves) - 1)
+            self.move(opponent, moves[random_move][0], moves[random_move][1])
 
     def get_board(self):
         return self.board
