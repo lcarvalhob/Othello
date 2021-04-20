@@ -19,6 +19,8 @@ class OthelloGUI:
         pygame.display.set_caption('gym_othello')
         self.window = pygame.display.set_mode((BOARD_HEIGHT, BOARD_WIDTH))
         self.board_state = Othello()
+        self.human = self.board_state.player2
+        self.computer = self.board_state.player1
         self.draw_board()
 
     def draw_board(self):
@@ -49,7 +51,7 @@ class OthelloGUI:
         self.window.fill(BACKGROUND_COLOUR)
         title_font = pygame.font.SysFont('Helvetica', 80, True)
         player_font = pygame.font.SysFont('Helvetica', 60, True)
-        # play_again_font = pygame.font.SysFont('Helvetica', 30, True)
+        play_again_font = pygame.font.SysFont('Helvetica', 30, True)
 
         if self.board_state.get_winner() is None:
             title_text = title_font.render('It is a draw!', True, (255, 255, 0))
@@ -61,7 +63,7 @@ class OthelloGUI:
             colour_winner = PLAYERS[self.board_state.get_winner()]
             title_text = title_font.render('White wins!', True, colour_winner)
 
-        # play_again_text = play_again_font.render('Click to play new match', True, (255, 255, 0))
+        play_again_text = play_again_font.render('Click to play new match', True, (255, 255, 0))
         player1_title = player_font.render('Black', True, PLAYERS['B'])
         player1_score = player_font.render(str(scores['B']), True, PLAYERS['B'])
         player2_title = player_font.render('White', True, PLAYERS['W'])
@@ -72,15 +74,24 @@ class OthelloGUI:
         self.window.blit(player2_title, player2_title.get_rect(centerx=BOARD_WIDTH / 1.5, centery=3 * BOARD_HEIGHT / 8))
         self.window.blit(player1_score, player1_score.get_rect(centerx=BOARD_WIDTH / 3.1, centery=1 * BOARD_HEIGHT / 2))
         self.window.blit(player2_score, player2_score.get_rect(centerx=BOARD_WIDTH / 1.5, centery=1 * BOARD_HEIGHT / 2))
-        # self.window.blit(play_again_text,
-        #                  play_again_text.get_rect(centerx=BOARD_WIDTH / 2, centery=BOARD_HEIGHT / 1.33))
+        self.window.blit(play_again_text,
+                         play_again_text.get_rect(centerx=BOARD_WIDTH / 2, centery=BOARD_HEIGHT / 1.33))
 
         pygame.display.flip()
 
     def play_again(self):
-        self.board_state.new_board()
-        self.draw_board()
-        pygame.display.flip()
+        running = True
+        self.board_state = Othello()
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONUP:
+                    running = False
+                    self.draw_board()
+                    self.run()
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
 
     def update_board_state(self, new_state):
         self.board_state = new_state
@@ -90,3 +101,34 @@ class OthelloGUI:
         observation = np.fliplr(
             np.flip(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface()).astype(np.uint8))))
         return observation
+
+    def get_player_move(self, player):
+
+        running = True
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONUP:
+                    (mouse_x, mouse_y) = pygame.mouse.get_pos()
+                    coordinates = ((mouse_y / 75), (mouse_x / 75))
+                    if not self.board_state.valid_moves(player):
+                        running = False
+                        pass
+                    elif self.board_state.check_move(player, int(coordinates[0]), int(coordinates[1])) != 0:
+                        self.board_state.move(player, int(coordinates[0]), int(coordinates[1]))
+                        running = False
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+        self.update_board_state(self.board_state)
+
+    def run(self):
+        while True:
+            if self.board_state.game_state():
+                self.game_over()
+                self.play_again()
+            else:
+                self.get_player_move(self.human)
+                pygame.time.wait(1000)
+                self.board_state.opponent_move(self.computer)
+                self.update_board_state(self.board_state)
