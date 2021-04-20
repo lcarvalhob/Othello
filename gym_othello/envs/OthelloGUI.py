@@ -1,4 +1,4 @@
-from othello.env.othello_model.Othello import Othello
+from gym_othello.envs.othello_model.Othello import Othello
 import pygame
 import numpy as np
 
@@ -16,7 +16,7 @@ class OthelloGUI:
         pygame.init()
         self.height = BOARD_HEIGHT
         self.width = BOARD_WIDTH
-        pygame.display.set_caption('othello')
+        pygame.display.set_caption('gym_othello')
         self.window = pygame.display.set_mode((BOARD_HEIGHT, BOARD_WIDTH))
         self.board_state = Othello()
         self.draw_board()
