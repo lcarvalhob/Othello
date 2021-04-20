@@ -57,7 +57,7 @@ class OthelloEnv(gym.Env):
                 reward += 1
             elif self.opponent == self.board_state.get_winner():
                 reward -= 1
-            self.board_gui.game_over()
+            observation = self.board_gui.game_over()
             return observation, reward, done, info
 
     def render(self, mode='human', close='False'):
