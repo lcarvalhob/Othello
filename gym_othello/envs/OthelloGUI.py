@@ -16,12 +16,12 @@ class OthelloGUI:
         pygame.init()
         self.height = BOARD_HEIGHT
         self.width = BOARD_WIDTH
-        pygame.display.set_caption('gym_othello')
+        pygame.display.set_caption('Othello-Classroom')
         self.window = pygame.display.set_mode((BOARD_HEIGHT, BOARD_WIDTH))
         self.board_state = Othello()
         self.human = self.board_state.player2
         self.computer = self.board_state.player1
-        self.draw_board()
+        # self.draw_board()
 
     def draw_board(self):
         self.window.fill(BACKGROUND_COLOUR)
@@ -128,7 +128,7 @@ class OthelloGUI:
                 self.game_over()
                 self.play_again()
             else:
-                self.get_player_move(self.human)
+                self.get_player_move(self.computer)
                 pygame.time.wait(1000)
-                self.board_state.opponent_move(self.computer)
+                self.board_state.opponent_move(self.human)
                 self.update_board_state(self.board_state)
