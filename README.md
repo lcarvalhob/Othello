@@ -1,4 +1,4 @@
-# Othello
+# Othello-Classroom
 Project based on using Othello as a model for an interactive learning environment.
 by Lucas Carvalho from Swansea University.
 # Installation
